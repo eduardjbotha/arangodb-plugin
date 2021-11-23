@@ -2,5 +2,6 @@
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 cd $(dirname "$0")
+docker pull arangodb/arangodb
 make build-in-docker src-clean || exit 1
 echo "installed dokku arangodb plugin"

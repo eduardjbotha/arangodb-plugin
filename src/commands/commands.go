@@ -27,6 +27,9 @@ func main() {
 	flag.Parse()
 
 	cmd := flag.Arg(0)
+	app := flag.Arg(1)
+	service := flag.Arg(2)
+	fmt.Sprintf(`App: %s\nService: %s`, app, service)
 	switch cmd {
 	case "arangodb-plugin:help":
 		usage()
