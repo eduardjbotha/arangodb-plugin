@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -29,15 +30,26 @@ func main() {
 	cmd := flag.Arg(0)
 	app := flag.Arg(1)
 	service := flag.Arg(2)
-	fmt.Println(`CMD: ` + cmd)
-	fmt.Println(`App: ` + app)
-	fmt.Println(`Service: ` + service)
+	containerName := "arangodb-" + app
+	environmentVariable := "ARANGODB_URL"
+
 	switch cmd {
 	case "arangodb-plugin:help":
 		usage()
 	case "help":
 		fmt.Print("help called manually")
 		fmt.Print(helpContent)
+	case "arangodb-plugin:create":
+		fmt.Println("triggered arangodb-plugin from: commands")
+		out, err := exec.Command("docker", "images", "|", "grep", "\"arangodb\"", "|", "awk", "'{print $1}'").Output()
+		if err != nil {
+			fmt.Errorf("Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>")
+			os.Exit(1)
+		}
+		fmt.Println("Output: " + out)
+	case "arangodb-plugin:delete":
+
+		fmt.Println("called delete")
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
