@@ -46,7 +46,7 @@ func main() {
 			fmt.Errorf("Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>")
 			os.Exit(1)
 		}
-		fmt.Println("Output: " + out)
+		fmt.Println("Output: " + string(out))
 	case "arangodb-plugin:delete":
 
 		fmt.Println("called delete")
