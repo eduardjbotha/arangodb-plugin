@@ -36,6 +36,7 @@ func main() {
 	case "arangodb-plugin:help":
 		usage()
 	case "help":
+		fmt.Print("help called manually")
 		fmt.Print(helpContent)
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
