@@ -47,6 +47,10 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Println("Output: " + string(out))
+		fmt.Println("Service: " + service)
+		fmt.Println("Container: " + containerName)
+		fmt.Println("ENV: " + environmentVariable)
+
 	case "arangodb-plugin:delete":
 
 		fmt.Println("called delete")
