@@ -1,4 +1,4 @@
-GO_REPO_ROOT := /go/src/github.com/dokku/smoke-test-plugin
+GO_REPO_ROOT := /go/src/github.com/eduardjbotha/arangodb-plugin
 BUILD_IMAGE := golang:1.7.1
 
 .PHONY: build-in-docker build clean src-clean

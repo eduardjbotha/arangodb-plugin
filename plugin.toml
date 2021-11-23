@@ -1,5 +1,4 @@
 [plugin]
-description = "dokku smoke test plugin"
-version = "0.8.0"
+description = "dokku arangodb plugin"
+version = "0.0.2"
 [plugin.config]
-testing = "true"

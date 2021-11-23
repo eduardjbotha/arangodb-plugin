@@ -18,7 +18,7 @@ Runs commands that interact with the app's repo
 Additional commands:`
 
 	helpContent = `
-    smoke-test-plugin:test, prints test message
+    arangodb-plugin:test, prints test message
 `
 )
 
@@ -28,12 +28,12 @@ func main() {
 
 	cmd := flag.Arg(0)
 	switch cmd {
-	case "smoke-test-plugin:help":
+	case "arangodb-plugin:help":
 		usage()
 	case "help":
 		fmt.Print(helpContent)
-	case "smoke-test-plugin:test":
-		fmt.Println("triggered smoke-test-plugin from: commands")
+	case "arangodb-plugin:test":
+		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
 		dokkuNotImplementExitCode, err := strconv.Atoi(os.Getenv("DOKKU_NOT_IMPLEMENTED_EXIT"))
 		if err != nil {
