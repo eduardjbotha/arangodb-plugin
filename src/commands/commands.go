@@ -53,10 +53,10 @@ func stopContainer(containerName string, remove bool) {
 	idStr := getContainerId(containerName)
 	if idStr != "" {
 		fmt.Println("stop container")
-		executeBashCommand(fmt.Sprintf("bash", "-c", "docker stop %s > /dev/null", idStr), "Could not stop container")
+		executeBashCommand(fmt.Sprintf("docker stop %s > /dev/null", idStr), "Could not stop container")
 		if remove {
 			fmt.Println("remove container")
-			executeBashCommand(fmt.Sprintf("bash", "-c", "docker rm %s > /dev/null", idStr), "Could not remove container")
+			executeBashCommand(fmt.Sprintf("docker rm %s > /dev/null", idStr), "Could not remove container")
 		}
 	}
 }
