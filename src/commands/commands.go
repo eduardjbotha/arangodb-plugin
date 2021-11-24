@@ -28,7 +28,10 @@ Additional commands:`
 )
 
 func executeBashCommand(command string, errorMessage string) string {
+	fmt.Println(fmt.Sprintf("executing bash command: %s", command))
 	result, err := exec.Command("bash", "-c", command).Output()
+
+	fmt.Println(fmt.Sprintf("Result %s, Error: %s", string(result), err.Error()))
 	if err != nil {
 		fmt.Errorf("Error executing command '%s': %s", command, err)
 		fmt.Errorf(errorMessage)
@@ -38,15 +41,21 @@ func executeBashCommand(command string, errorMessage string) string {
 }
 
 func getContainerId(containerName string) string {
+	fmt.Println("stopping container: " + containerName)
 	cmd := fmt.Sprintf("docker ps | grep %s | awk '{print $1}'", containerName)
-	return executeBashCommand(cmd, "Could not get container id")
+	res := executeBashCommand(cmd, "Could not get container id")
+	fmt.Println(fmt.Sprintf("Get container Id: %s", res))
+	return res
 }
 
 func stopContainer(containerName string, remove bool) {
+	fmt.Println(fmt.Sprintf("stop container: %s", containerName))
 	idStr := getContainerId(containerName)
 	if idStr != "" {
+		fmt.Println("stop container")
 		executeBashCommand(fmt.Sprintf("bash", "-c", "docker stop %s > /dev/null", idStr), "Could not stop container")
 		if remove {
+			fmt.Println("remove container")
 			executeBashCommand(fmt.Sprintf("bash", "-c", "docker rm %s > /dev/null", idStr), "Could not remove container")
 		}
 	}
