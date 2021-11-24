@@ -31,7 +31,7 @@ func executeBashCommand(command string, errorMessage string) string {
 	fmt.Println(fmt.Sprintf("executing bash command: %s", command))
 	result, err := exec.Command("bash", "-c", command).Output()
 
-	fmt.Println(fmt.Sprintf("Result %s, Error: %s", string(result), err.Error()))
+	fmt.Println(fmt.Sprintf("Result %s, Error: %s", string(result), err))
 	if err != nil {
 		fmt.Errorf("Error executing command '%s': %s", command, err)
 		fmt.Errorf(errorMessage)
