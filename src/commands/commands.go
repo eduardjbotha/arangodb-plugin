@@ -19,6 +19,10 @@ Runs commands that interact with the app's repo
 Additional commands:`
 
 	helpContent = `
+    arangodb-plugin:help, displays this help message
+    arangodb-plugin:info, prints the container information
+    arangodb-plugin:create <app>, creates the application container with a volume
+    arangodb-plugin:delete <app>, deletes the application container and volume
     arangodb-plugin:test, prints test message
 `
 )
