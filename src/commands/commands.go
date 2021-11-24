@@ -37,7 +37,7 @@ func executeBashCommand(command string, errorMessage string) string {
 		fmt.Errorf(errorMessage)
 		os.Exit(1)
 	}
-	return string(result)
+	return strings.TrimSpace(string(result))
 }
 
 func getContainerId(containerName string) string {
