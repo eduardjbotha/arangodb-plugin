@@ -27,7 +27,7 @@ Additional commands:`
 `
 )
 
-func executeBashCommand(command string, errorMessage string) string {
+func executeBashCommand(command string, errorMessage string, continueAnyway bool) string {
 	fmt.Println(fmt.Sprintf("executing bash command: %s", command))
 	result, err := exec.Command("bash", "-c", command).Output()
 
@@ -35,7 +35,9 @@ func executeBashCommand(command string, errorMessage string) string {
 	if err != nil {
 		fmt.Errorf("Error executing command '%s': %s", command, err)
 		fmt.Errorf(errorMessage)
-		os.Exit(1)
+		if !continueAnyway {
+			os.Exit(1)
+		}
 	}
 	return strings.TrimSpace(string(result))
 }
@@ -43,7 +45,7 @@ func executeBashCommand(command string, errorMessage string) string {
 func getContainerId(containerName string) string {
 	fmt.Println("stopping container: " + containerName)
 	cmd := fmt.Sprintf("docker ps | grep %s | awk '{print $1}'", containerName)
-	res := executeBashCommand(cmd, "Could not get container id")
+	res := executeBashCommand(cmd, "Could not get container id", false)
 	fmt.Println(fmt.Sprintf("Get container Id: %s", res))
 	return res
 }
@@ -53,10 +55,10 @@ func stopContainer(containerName string, remove bool) {
 	idStr := getContainerId(containerName)
 	if idStr != "" {
 		fmt.Println("stop container")
-		executeBashCommand(fmt.Sprintf("docker stop %s > /dev/null", idStr), "Could not stop container")
+		executeBashCommand(fmt.Sprintf("docker stop %s > /dev/null", idStr), "Could not stop container", false)
 		if remove {
 			fmt.Println("remove container")
-			executeBashCommand(fmt.Sprintf("docker rm %s > /dev/null", idStr), "Could not remove container")
+			executeBashCommand(fmt.Sprintf("docker rm %s > /dev/null", idStr), "Could not remove container", true)
 		}
 	}
 }
@@ -85,7 +87,7 @@ func main() {
 		fmt.Println("triggered arangodb-plugin from: commands")
 
 		cmd := "docker images | grep arangodb | awk '{print $1}'"
-		image := executeBashCommand(cmd, "Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>")
+		image := executeBashCommand(cmd, "Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>", false)
 		fmt.Println("Output: " + string(image))
 
 		fmt.Println("stopping container")
@@ -95,7 +97,7 @@ func main() {
 		if _, err := os.Stat(hostDirectory); os.IsNotExist(err) {
 			fmt.Println("host dir doesn't exist")
 
-			executeBashCommand(fmt.Sprintf("mkdir -p %s && chown -R dokku:dokku %s", hostDirectory, hostDirectory), "Could not create directory")
+			executeBashCommand(fmt.Sprintf("mkdir -p %s && chown -R dokku:dokku %s", hostDirectory, hostDirectory), "Could not create directory", false)
 		}
 		fmt.Println("volumen name")
 
@@ -126,18 +128,18 @@ func main() {
 		fmt.Println("if host dir exists")
 		if _, err := os.Stat(hostDirectory); !os.IsNotExist(err) {
 			fmt.Println("delete host dir")
-			executeBashCommand(fmt.Sprintf("rm -rf %s", hostDirectory), "Could not delete host directory")
+			executeBashCommand(fmt.Sprintf("rm -rf %s", hostDirectory), "Could not delete host directory", false)
 		}
 
 		fmt.Println("remove dokku config")
-		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\", %s", app, environmentVariable), "Could not remove dokku configuration")
+		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\", %s", app, environmentVariable), "Could not remove dokku configuration", false)
 		fmt.Println(fmt.Sprintf("Container deleted: %s", containerName))
 
 	case "arangodb-plugin:info":
 		id := getContainerId(containerName)
 
 		cmd := fmt.Sprintf("docker inspect %s | grep IPAddress | cut -d '\"' -f 4", id)
-		ip := executeBashCommand(cmd, fmt.Sprintf("Docker container could not be inspected"))
+		ip := executeBashCommand(cmd, fmt.Sprintf("Docker container could not be inspected"), false)
 
 		msg := `
 
