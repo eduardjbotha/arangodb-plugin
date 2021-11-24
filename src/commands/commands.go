@@ -45,9 +45,9 @@ func getContainerId(containerName string) string {
 func stopContainer(containerName string, remove bool) {
 	idStr := getContainerId(containerName)
 	if idStr != "" {
-		exec.Command(fmt.Sprintf("bash", "-c", "docker stop %s > /dev/null", idStr))
+		executeBashCommand(fmt.Sprintf("bash", "-c", "docker stop %s > /dev/null", idStr), "Could not stop container")
 		if remove {
-			exec.Command(fmt.Sprintf("bash", "-c", "docker rm %s > /dev/null", idStr))
+			executeBashCommand(fmt.Sprintf("bash", "-c", "docker rm %s > /dev/null", idStr), "Could not remove container")
 		}
 	}
 }
@@ -83,20 +83,31 @@ func main() {
 		}
 		fmt.Println("Output: " + string(image))
 
+		fmt.Println("stopping container")
 		stopContainer(containerName, false)
+		fmt.Println("if hostdir exists")
 
 		if _, err := os.Stat(hostDirectory); os.IsNotExist(err) {
+			fmt.Println("host dir doesn't exist")
+
 			executeBashCommand(fmt.Sprintf("mkdir -p %s && chown -R dokku:dokku %s", hostDirectory, hostDirectory), "Could not create directory")
 		}
+		fmt.Println("volumen name")
+
 		volume := hostDirectory + ":/var/lib/arangodb"
 
+		fmt.Println("create container cmd")
 		createContainerCmd := fmt.Sprintf("docker run -d --name %s -p 8529:8529 -v %s -e ARANGO_RANDOM_ROOT_PASSWORD=1 arangodb/arangodb", containerName, volume)
 
+		fmt.Println("execute create container")
 		_, err = exec.Command("bash", "-c", createContainerCmd).Output()
+		fmt.Println("if error")
 		if err != nil {
+			fmt.Println("is error")
 			fmt.Errorf("Docker container could not be created: %s", err)
 			os.Exit(1)
 		}
+		fmt.Println("finished")
 
 		fmt.Println("Service: " + service)
 		fmt.Println("Container created: " + containerName)
