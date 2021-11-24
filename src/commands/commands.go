@@ -76,11 +76,7 @@ func main() {
 		fmt.Println("triggered arangodb-plugin from: commands")
 
 		cmd := "docker images | grep arangodb | awk '{print $1}'"
-		image, err := exec.Command("bash", "-c", cmd).Output()
-		if err != nil {
-			fmt.Errorf("Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>")
-			os.Exit(1)
-		}
+		image := executeBashCommand(cmd, "Docker image for ArangoDB not found. Please execute dokku plugin:install <repo>")
 		fmt.Println("Output: " + string(image))
 
 		fmt.Println("stopping container")
@@ -100,7 +96,7 @@ func main() {
 		createContainerCmd := fmt.Sprintf("docker run -d --name %s -p 8529:8529 -v %s -e ARANGO_RANDOM_ROOT_PASSWORD=1 arangodb/arangodb", containerName, volume)
 
 		fmt.Println("execute create container")
-		_, err = exec.Command("bash", "-c", createContainerCmd).Output()
+		_, err := exec.Command("bash", "-c", createContainerCmd).Output()
 		fmt.Println("if error")
 		if err != nil {
 			fmt.Println("is error")
@@ -115,14 +111,18 @@ func main() {
 
 	case "arangodb-plugin:delete":
 
+		fmt.Println("stopping container: " + containerName)
 		stopContainer(containerName, false)
 
+		fmt.Println("if host dir exists")
 		if _, err := os.Stat(hostDirectory); !os.IsNotExist(err) {
+			fmt.Println("delete host dir")
 			executeBashCommand(fmt.Sprintf("rm -rf %s", hostDirectory), "Could not delete host directory")
 		}
 
+		fmt.Println("remove dokku config")
 		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\", %s", app, environmentVariable), "Could not remove dokku configuration")
-		fmt.Sprintf("Container deleted: %s", containerName)
+		fmt.Println(fmt.Sprintf("Container deleted: %s", containerName))
 
 	case "arangodb-plugin:info":
 		id := getContainerId(containerName)
@@ -136,7 +136,7 @@ func main() {
 				Private ports: 8529
 		`
 
-		fmt.Sprintf(msg, ip)
+		fmt.Println(fmt.Sprintf(msg, ip))
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
