@@ -107,13 +107,12 @@ func main() {
 		createContainerCmd := fmt.Sprintf("docker run -d --name %s -p 8529:8529 -v %s -e ARANGO_RANDOM_ROOT_PASSWORD=1 arangodb/arangodb", containerName, volume)
 
 		fmt.Println("execute create container")
-		_, err := exec.Command("bash", "-c", createContainerCmd).Output()
-		fmt.Println("if error")
-		if err != nil {
-			fmt.Println("is error")
-			fmt.Errorf("Docker container could not be created: %s", err)
-			os.Exit(1)
-		}
+		executeBashCommand(createContainerCmd, "Docker container could not be created", false)
+
+		passwordCmd := fmt.Sprintf("docker logs %s | grep PASSWORD | awk '{print $4}'", containerName)
+		password := executeBashCommand(passwordCmd, "Error getting password", true)
+
+		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\", %s=%s", app, environmentVariable, password), "Could not set arango environment variable", false)
 		fmt.Println("finished")
 
 		fmt.Println("Service: " + service)
