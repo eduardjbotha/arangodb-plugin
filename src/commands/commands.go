@@ -124,7 +124,7 @@ func main() {
 	case "arangodb-plugin:delete":
 
 		fmt.Println("stopping container: " + containerName)
-		stopContainer(containerName, false)
+		stopContainer(containerName, true)
 
 		fmt.Println("if host dir exists")
 		if _, err := os.Stat(hostDirectory); !os.IsNotExist(err) {
