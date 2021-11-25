@@ -33,7 +33,7 @@ func executeBashCommand(command string, errorMessage string, continueAnyway bool
 
 	fmt.Println(fmt.Sprintf("Result %s, Error: %s", string(result), err))
 	if err != nil {
-		fmt.Errorf("Error executing command '%s': %s", command, err)
+		fmt.Errorf("Error executing command '%s': %s", command, err.Error())
 		fmt.Errorf(errorMessage)
 		if !continueAnyway {
 			os.Exit(1)
@@ -110,9 +110,11 @@ func main() {
 		executeBashCommand(createContainerCmd, "Docker container could not be created", false)
 
 		passwordCmd := fmt.Sprintf("docker logs %s | grep PASSWORD | awk '{print $4}'", containerName)
+		fmt.Println("execute get password")
 		password := executeBashCommand(passwordCmd, "Error getting password", true)
 
-		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\", %s=%s", app, environmentVariable, password), "Could not set arango environment variable", false)
+		fmt.Println("execute set password")
+		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", app, environmentVariable, password), "Could not set arango environment variable", false)
 		fmt.Println("finished")
 
 		fmt.Println("Service: " + service)
