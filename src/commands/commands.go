@@ -151,14 +151,14 @@ func main() {
 
 		fmt.Println(fmt.Sprintf(msg, ip))
 	case "arangodb-plugin:link":
-		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, containerName, pluginName)
+		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not link", true)
 
-		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", containerName, environmentVariable, password), "Could not set arango environment variable", false)
+		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", service, environmentVariable, password), "Could not set arango environment variable", false)
 	case "arangodb-plugin:unlink":
-		cmd := fmt.Sprintf("dokku link:delete %s %s %s", app, containerName, pluginName)
+		cmd := fmt.Sprintf("dokku link:delete %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not unlink", true)
-		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", containerName, environmentVariable), "Could not unset arango environment variable", false)
+		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", service, environmentVariable), "Could not unset arango environment variable", false)
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
