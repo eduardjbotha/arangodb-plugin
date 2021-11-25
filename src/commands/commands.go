@@ -71,7 +71,7 @@ func main() {
 	app := flag.Arg(1)
 	service := flag.Arg(2)
 	containerName := "arangodb-" + app
-	environmentVariable := "ARANGODB_URL"
+	environmentVariable := "ARANGODB_PASSWORD"
 
 	dokkuRoot := os.Getenv("DOKKU_ROOT")
 	pluginName := "arangodb"
@@ -133,7 +133,7 @@ func main() {
 		}
 
 		fmt.Println("remove dokku config")
-		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\", %s", app, environmentVariable), "Could not remove dokku configuration", false)
+		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", app, environmentVariable), "Could not remove dokku configuration", false)
 		fmt.Println(fmt.Sprintf("Container deleted: %s", containerName))
 
 	case "arangodb-plugin:info":
