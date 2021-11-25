@@ -115,7 +115,7 @@ func main() {
 		password = executeBashCommand(passwordCmd, "Error getting password", true)
 
 		fmt.Println("execute set password")
-		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", app, environmentVariable, password), "Could not set arango environment variable", false)
+		executeBashCommand(fmt.Sprintf("dokku config:set --global %s=%s", environmentVariable, password), "Could not set arango environment variable", false)
 		fmt.Println("finished")
 
 		fmt.Println("Service: " + service)
@@ -134,7 +134,7 @@ func main() {
 		}
 
 		fmt.Println("remove dokku config")
-		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", app, environmentVariable), "Could not remove dokku configuration", false)
+		executeBashCommand(fmt.Sprintf("dokku config:unset --global %s", environmentVariable), "Could not remove dokku configuration", false)
 		fmt.Println(fmt.Sprintf("Container deleted: %s", containerName))
 
 	case "arangodb-plugin:info":
@@ -154,11 +154,9 @@ func main() {
 		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not link", true)
 
-		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", service, environmentVariable, password), "Could not set arango environment variable", false)
 	case "arangodb-plugin:unlink":
 		cmd := fmt.Sprintf("dokku link:delete %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not unlink", true)
-		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", service, environmentVariable), "Could not unset arango environment variable", false)
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
