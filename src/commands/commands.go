@@ -145,6 +145,7 @@ func main() {
 
 		fmt.Println("remove dokku config")
 		executeBashCommand(fmt.Sprintf("dokku config:unset --global %s", environmentVariable), "Could not remove dokku configuration", false)
+		executeBashCommand(fmt.Sprintf("dokku config:unset --global %s", environmentVariableUrl), "Could not remove dokku configuration", false)
 		fmt.Println(fmt.Sprintf("Container deleted: %s", containerName))
 
 	case "arangodb-plugin:info":
@@ -152,19 +153,13 @@ func main() {
 
 		cmd := fmt.Sprintf("docker inspect %s | grep IPAddress | cut -d '\"' -f 4", id)
 		ip := executeBashCommand(cmd, fmt.Sprintf("Docker container could not be inspected"), false)
-		one := strings.Split(ip, "\n")
 		msg := `
 
 	Host: %s
 	Private ports: 8529
-	"%s"
 		`
 
-		if len(one) > 0 {
-			fmt.Println(fmt.Sprintf(msg, ip, one[0]))
-		} else {
-			fmt.Println(fmt.Sprintf(msg, ip, "None"))
-		}
+		fmt.Println(fmt.Sprintf(msg, ip))
 	case "arangodb-plugin:link":
 		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not link", true)
