@@ -72,6 +72,7 @@ func main() {
 	service := flag.Arg(2)
 	containerName := "arangodb-" + app
 	environmentVariable := "ARANGODB_PASSWORD"
+	environmentVariableUrl := "ARANGODB_URL"
 
 	dokkuRoot := os.Getenv("DOKKU_ROOT")
 	pluginName := "arangodb"
@@ -116,6 +117,15 @@ func main() {
 
 		fmt.Println("execute set password")
 		executeBashCommand(fmt.Sprintf("dokku config:set --global %s=%s", environmentVariable, password), "Could not set arango environment variable", false)
+
+		id := getContainerId(containerName)
+
+		cmd = fmt.Sprintf("docker inspect %s | grep IPAddress | cut -d '\"' -f 4", id)
+		ip := executeBashCommand(cmd, fmt.Sprintf("Docker container could not be inspected"), false)
+		one := strings.Split(ip, "\n")
+		if len(one) > 0 {
+			executeBashCommand(fmt.Sprintf("dokku config:set --global %s=http://%s:8529", environmentVariableUrl, one[0]), "Could not set arango environment variable", false)
+		}
 		fmt.Println("finished")
 
 		fmt.Println("Service: " + service)
@@ -142,14 +152,19 @@ func main() {
 
 		cmd := fmt.Sprintf("docker inspect %s | grep IPAddress | cut -d '\"' -f 4", id)
 		ip := executeBashCommand(cmd, fmt.Sprintf("Docker container could not be inspected"), false)
-
+		one := strings.Split(ip, "\n")
 		msg := `
 
-				Host: %s
-				Private ports: 8529
+	Host: %s
+	Private ports: 8529
+	"%s"
 		`
 
-		fmt.Println(fmt.Sprintf(msg, ip))
+		if len(one) > 0 {
+			fmt.Println(fmt.Sprintf(msg, ip, one[0]))
+		} else {
+			fmt.Println(fmt.Sprintf(msg, ip, "None"))
+		}
 	case "arangodb-plugin:link":
 		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, service, pluginName)
 		executeBashCommand(cmd, "Could not link", true)
