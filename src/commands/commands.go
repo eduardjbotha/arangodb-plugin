@@ -149,6 +149,9 @@ func main() {
 		`
 
 		fmt.Println(fmt.Sprintf(msg, ip))
+	case "arangodb-plugin:link":
+		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, containerName, pluginName)
+		executeBashCommand(cmd, "Could not link", true)
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
