@@ -76,6 +76,7 @@ func main() {
 	dokkuRoot := os.Getenv("DOKKU_ROOT")
 	pluginName := "arangodb"
 	hostDirectory := fmt.Sprintf("%s/%s/%s", dokkuRoot, app, pluginName)
+	password := ""
 
 	switch cmd {
 	case "arangodb-plugin:help":
@@ -111,7 +112,7 @@ func main() {
 
 		passwordCmd := fmt.Sprintf("docker logs %s | grep PASSWORD | awk '{print $4}'", containerName)
 		fmt.Println("execute get password")
-		password := executeBashCommand(passwordCmd, "Error getting password", true)
+		password = executeBashCommand(passwordCmd, "Error getting password", true)
 
 		fmt.Println("execute set password")
 		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", app, environmentVariable, password), "Could not set arango environment variable", false)
@@ -152,6 +153,12 @@ func main() {
 	case "arangodb-plugin:link":
 		cmd := fmt.Sprintf("dokku link:create %s %s %s", app, containerName, pluginName)
 		executeBashCommand(cmd, "Could not link", true)
+
+		executeBashCommand(fmt.Sprintf("dokku config:set \"%s\" %s=%s", containerName, environmentVariable, password), "Could not set arango environment variable", false)
+	case "arangodb-plugin:unlink":
+		cmd := fmt.Sprintf("dokku link:delete %s %s %s", app, containerName, pluginName)
+		executeBashCommand(cmd, "Could not unlink", true)
+		executeBashCommand(fmt.Sprintf("dokku config:unset \"%s\" %s", containerName, environmentVariable), "Could not unset arango environment variable", false)
 	case "arangodb-plugin:test":
 		fmt.Println("triggered arangodb-plugin from: commands")
 	default:
